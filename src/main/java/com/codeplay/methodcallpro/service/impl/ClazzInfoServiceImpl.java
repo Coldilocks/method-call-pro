@@ -83,6 +83,6 @@ public class ClazzInfoServiceImpl implements ClazzInfoService {
         methodService.addMethodList(DataContainer.methodList);
         methodCallService.addMethodCallList(DataContainer.methodCallList);
         // update callee's ID of method call
-        methodCallService.updateCalleeIdAndIsCalleeUserDefined(DataContainer.getProjectName());
+        methodCallService.updateCalleeId(DataContainer.getProjectName());
     }
 }

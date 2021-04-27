@@ -25,7 +25,7 @@ public interface MethodCallService {
 
     MethodCall updateMethodCallById(String methodCallId, MethodCall methodCall);
 
-    void updateCalleeIdAndIsCalleeUserDefined(String projectName);
+    void updateCalleeId(String projectName);
 
     List<MethodCall> getMethodCallsInsideProject(String projectName);
 

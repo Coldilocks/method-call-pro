@@ -87,7 +87,7 @@ public class MethodCallServiceImpl implements MethodCallService {
     }
 
     @Override
-    public void updateCalleeIdAndIsCalleeUserDefined(String projectName) {
+    public void updateCalleeId(String projectName) {
         List<Method> methodList = methodService.getMethodsByProjectName(projectName);
 
         // key: method_signature value: id
@@ -110,7 +110,6 @@ public class MethodCallServiceImpl implements MethodCallService {
             if(methodSignature2Id.containsKey(methodCall.getCalleeSignature())){
                 methodCall.setCalleeId(methodSignature2Id.get(methodCall.getCalleeSignature()));
                 methodCall.setCalleeClazzId(methodSignature2ClazzId.get(methodCall.getCalleeSignature()));
-                methodCall.setIsCalleeUserDefinedMethod(1);
             }
         }
         methodCallRepository.saveAll(methodCallList);

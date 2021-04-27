@@ -9,7 +9,13 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
+import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserMethodDeclaration;
+import com.github.javaparser.symbolsolver.javassistmodel.JavassistMethodDeclaration;
+import com.github.javaparser.symbolsolver.reflectionmodel.ReflectionMethodDeclaration;
 
 /**
  * @author coldilock
@@ -53,19 +59,22 @@ public class CompleteVisitor extends VoidVisitorAdapter {
         super.visit(n, arg);
 
         // n.getVariables()
-
         String fieldName = "_";
         String fieldType;
+        String accessType = n.getAccessSpecifier().asString();
+        boolean isStatic = n.isStatic();
+        boolean isFinal = n.isFinal();
         try{
-            fieldType = n.resolve().getType().describe();
-            fieldName = n.resolve().getName();
+            ResolvedFieldDeclaration resolvedField = n.resolve();
+            fieldName = resolvedField.getName();
+            fieldType = resolvedField.getType().describe();
         } catch (Exception e){
-            fieldType = "UnsolvedType.In.FieldDeclaration.field";
+            fieldType = "UnsolvedType.In.FieldDeclaration.Field";
         }
 
         if(StringUtils.checkNodeName(fieldType)){
             // System.out.printf("\t[Field]: %s [filedType]: %s%n", fieldName, fieldType);
-            DataContainer.addField(fieldName, fieldType);
+            DataContainer.addField(fieldName, fieldType, accessType, isStatic, isFinal);
         }
     }
 
@@ -87,20 +96,34 @@ public class CompleteVisitor extends VoidVisitorAdapter {
     @Override
     public void visit(MethodDeclaration n, Object arg) {
         String methodName = n.getNameAsString();
-        String methodReturnType = n.getType().toString();
         String methodSignature;
+        Type methodReturnType = n.getType();
+        String methodReturnTypeStr;
+        String accessType = n.getAccessSpecifier().asString();
+        boolean isStatic = n.isStatic();
+        boolean isAbstract = n.isAbstract();
         try{
-            methodSignature = n.resolve().getQualifiedSignature();
+            ResolvedMethodDeclaration resolvedMethod = n.resolve();
+            methodSignature = resolvedMethod.getQualifiedSignature();
             // System.out.println("methodReturnType: " + n.resolve().getReturnType().describe());
         } catch (Exception e){
             methodSignature = "UnsolvedType.In.MethodDeclaration.method()";
+        }
+
+        try{
+            // get the qualified signature of the calling method using JavaSymbolSolver
+            methodReturnTypeStr = methodReturnType.resolve().describe();
+
+        } catch (Exception e){
+            methodReturnTypeStr = "UnsolvedType.In.MethodDeclaration.ReturnType";
         }
 
         if(StringUtils.checkNodeName(methodSignature)){
             // System.out.printf("\t[caller]: %s [methodReturnType]: %s [methodSignature]: %s%n", methodName, methodReturnType, methodSignature);
             currentMethodName = methodName;
             currentMethodSignature = methodSignature;
-            DataContainer.addMethod(currentMethodName, currentMethodSignature);
+            DataContainer.addMethod(currentMethodName, currentMethodSignature,
+                    methodReturnTypeStr, accessType, isStatic, isAbstract);
         }
 
         super.visit(n, arg);
@@ -116,12 +139,23 @@ public class CompleteVisitor extends VoidVisitorAdapter {
         super.visit(n, arg);
 
         String methodName = n.getNameAsString();
-
         String methodReturnType = "";
         String methodSignature;
+        boolean isJdkMethod = false;
+        boolean isJarMethod = false;
+        boolean isProjectMethod = false;
         try{
-            methodSignature = n.resolve().getQualifiedSignature();
-            methodReturnType = n.resolve().getReturnType().describe();
+            ResolvedMethodDeclaration resolvedMethod = n.resolve();
+            methodSignature = resolvedMethod.getQualifiedSignature();
+            methodReturnType = resolvedMethod.getReturnType().describe();
+
+            if(resolvedMethod instanceof ReflectionMethodDeclaration){
+                isJdkMethod = true;
+            } else if (resolvedMethod instanceof JavassistMethodDeclaration){
+                isJarMethod = true;
+            } else if (resolvedMethod instanceof JavaParserMethodDeclaration){
+                isProjectMethod = true;
+            }
         } catch (Exception e){
             methodSignature = "UnsolvedType.In.MethodCallExpr.method()";
         }
@@ -129,7 +163,8 @@ public class CompleteVisitor extends VoidVisitorAdapter {
         if(StringUtils.checkNodeName(methodSignature)){
             // System.out.printf("\t[calleeMethodName]: %s [methodReturnType]: %s [methodSignature]: %s%n", methodName, methodReturnType, methodSignature);
             // System.out.printf("\t\t[callee]: %s %n", methodSignature);
-            DataContainer.addMethodCall(currentMethodName, currentMethodSignature, methodName, methodSignature);
+            DataContainer.addMethodCall(currentMethodName, methodName,
+                    currentMethodSignature, methodSignature, isJdkMethod, isJarMethod, isProjectMethod);
         }
     }
 

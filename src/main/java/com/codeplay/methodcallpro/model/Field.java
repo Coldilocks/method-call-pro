@@ -21,10 +21,15 @@ public class Field {
 
   public Field(){}
 
-  public Field(String id, String fieldName, String fieldType, String clazzId, String clazzQualifiedName, String projectName){
+  public Field(String id, String fieldName, String fieldType,
+               String accessType, boolean isStatic, boolean isFinal,
+               String clazzId, String clazzQualifiedName, String projectName){
     this.id = id;
     this.fieldName = fieldName;
     this.fieldType = fieldType;
+    this.accessType = accessType;
+    this.isStatic = (isStatic ? 1 : 0);
+    this.isFinal = (isFinal ? 1 : 0);
     this.clazzId = clazzId;
     this.clazzQualifiedName = clazzQualifiedName;
     this.projectName = projectName;

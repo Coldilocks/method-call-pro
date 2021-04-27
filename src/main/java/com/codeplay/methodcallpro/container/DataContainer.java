@@ -25,10 +25,6 @@ public class DataContainer {
 
     public static List<MethodCall> methodCallList = new ArrayList<>();
 
-    // private static Map<String, String> methodSignature2Id = new HashMap<>();
-
-    // public static Map<String, List<String>> methodCallMap = new HashMap<>();
-
     public static String getProjectName() {
         return projectName;
     }
@@ -39,27 +35,55 @@ public class DataContainer {
     }
 
     public static void setClazz(String clazzName, String packageName){
-        currentClazz = new Clazz(StringUtils.createId(), clazzName, packageName, packageName.concat(".").concat(clazzName), projectName);
+        currentClazz = new Clazz(
+                StringUtils.createId(),
+                clazzName, packageName,
+                packageName.concat(".").concat(clazzName),
+                projectName);
     }
 
-    public static void addField(String fieldName, String fieldType){
-        Field field = new Field(StringUtils.createId(), fieldName, fieldType, currentClazz.getId(), currentClazz.getQualifiedName(), projectName);
+    public static void addField(String fieldName, String fieldType,
+                                String accessType,
+                                boolean isStatic, boolean isFinal){
+
+        Field field = new Field(
+                StringUtils.createId(),
+                fieldName, fieldType,
+                accessType,
+                isStatic, isFinal,
+                currentClazz.getId(),
+                currentClazz.getQualifiedName(),
+                projectName);
         fieldList.add(field);
     }
 
-    public static void addMethod(String methodName, String methodSignature){
-        Method method = new Method(StringUtils.createId(), methodName, methodSignature, currentClazz.getId(), currentClazz.getQualifiedName(), projectName);
+    public static void addMethod(String methodName, String methodSignature,
+                                 String returnType, String accessType,
+                                 boolean isStatic, boolean isAbstract){
+
+        Method method = new Method(
+                StringUtils.createId(),
+                methodName, methodSignature,
+                returnType, accessType,
+                isStatic, isAbstract,
+                currentClazz.getId(),
+                currentClazz.getQualifiedName(),
+                projectName);
         methodList.add(method);
     }
 
-    public static void addMethodCall(String callerName, String callerSignature, String calleeName, String calleeSignature){
-        // methodCallMap.computeIfAbsent(callerSignature, k -> new ArrayList<>()).add(calleeSignature);
+    public static void addMethodCall(String callerName, String calleeName,
+                                     String callerSignature, String calleeSignature,
+                                     boolean isJdkMethod, boolean isJarMethod,
+                                     boolean isProjectMethod){
 
         MethodCall methodCall = new MethodCall(
                 StringUtils.createId(),
-                callerName, callerSignature,
-                calleeName, calleeSignature,
-                projectName, currentClazz.getId());
+                callerName, calleeName,
+                callerSignature, calleeSignature,
+                currentClazz.getId(),
+                isJdkMethod, isJarMethod,
+                isProjectMethod, projectName);
 
         methodCallList.add(methodCall);
     }

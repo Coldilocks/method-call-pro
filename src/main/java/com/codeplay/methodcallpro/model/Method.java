@@ -25,10 +25,18 @@ public class Method {
 
   }
 
-  public Method(String id, String methodName, String methodSignature, String clazzId, String clazzQualifiedName, String projectName){
+  public Method(String id, String methodName, String methodSignature,
+                String returnType, String accessType,
+                boolean isStatic, boolean isAbstract,
+                String clazzId, String clazzQualifiedName,
+                String projectName){
     this.id = id;
     this.methodName = methodName;
     this.methodSignature = methodSignature;
+    this.returnType = returnType;
+    this.accessType = accessType;
+    this.isStatic = (isStatic ? 1 : 0);
+    this.isAbstract = (isAbstract? 1 : 0);
     this.clazzId = clazzId;
     this.clazzQualifiedName = clazzQualifiedName;
     this.projectName = projectName;

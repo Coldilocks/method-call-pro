@@ -26,30 +26,22 @@ public class MethodCall {
 
   public MethodCall(){}
 
-  public MethodCall(String id,
-                    String callerName, String callerSignature,
-                    String calleeName, String calleeSignature,
+  public MethodCall(String id, String callerName, String calleeName,
+                    String callerSignature, String calleeSignature,
+                    String callerClazzId, boolean isCalleeJdkMethod,
+                    boolean isCalleeThirdPartyMethod,
+                    boolean isCalleeUserDefinedMethod,
                     String projectName){
     this.id = id;
     this.callerName = callerName;
-    this.callerSignature = callerSignature;
     this.calleeName = calleeName;
-    this.calleeSignature = calleeSignature;
-    this.projectName = projectName;
-
-  }
-
-  public MethodCall(String id,
-                    String callerName, String callerSignature,
-                    String calleeName, String calleeSignature,
-                    String projectName, String callerClazzId){
-    this.id = id;
-    this.callerName = callerName;
     this.callerSignature = callerSignature;
-    this.calleeName = calleeName;
     this.calleeSignature = calleeSignature;
-    this.projectName = projectName;
     this.callerClazzId = callerClazzId;
+    this.isCalleeJdkMethod = (isCalleeJdkMethod ? 1 : 0);
+    this.isCalleeThirdPartyMethod = (isCalleeThirdPartyMethod ? 1 : 0);
+    this.isCalleeUserDefinedMethod = (isCalleeUserDefinedMethod ? 1 : 0);
+    this.projectName = projectName;
   }
 
   public String getId() {
