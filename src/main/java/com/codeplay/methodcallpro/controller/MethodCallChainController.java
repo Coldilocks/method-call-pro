@@ -8,6 +8,7 @@ import com.codeplay.methodcallpro.service.MethodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,10 +31,10 @@ public class MethodCallChainController {
     @Autowired
     private MethodCallService methodCallService;
 
-    @RequestMapping(path="/methodcall", method = RequestMethod.GET)
-    public ResponseEntity<List<MethodCall>> getAllMethodCalls(){
+    @RequestMapping(path="/methodcall/{projectName}", method = RequestMethod.GET)
+    public ResponseEntity<List<MethodCall>> getAllMethodCalls(@PathVariable String projectName){
         try{
-            List<MethodCall> methodCallList = methodCallService.getAllMethodCalls();
+            List<MethodCall> methodCallList = methodCallService.getMethodCallsByProjectName(projectName);
             if(methodCallList.isEmpty()){
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             } else {
